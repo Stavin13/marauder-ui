@@ -77,10 +77,10 @@ export const useSerialConnection = () => {
       
       if (error.name === 'InvalidStateError') {
         errorMessage = 'Port is already open or in use'
-        suggestion = 'Try: 1) Disconnect first, 2) Close other apps using the port, 3) Unplug and replug device'
+        suggestion = 'Try: 1) Close other browser tabs (e.g. localhost), 2) Disconnect in other apps, 3) Unplug/replug device'
       } else if (error.name === 'NetworkError') {
         errorMessage = 'Failed to open port'
-        suggestion = 'Try: 1) Check device is plugged in, 2) Close Arduino IDE/PlatformIO/other serial apps, 3) Try "Select New Port" button'
+        suggestion = 'Try: 1) Close other browser tabs (e.g. localhost), 2) Close Arduino IDE/serial apps, 3) Unplug/replug device'
       } else if (error.name === 'NotFoundError') {
         errorMessage = 'No port selected'
         suggestion = 'Click Connect again and select your device'
