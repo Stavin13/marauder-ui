@@ -9,30 +9,100 @@ const isDemoMode = ref(false)
 let buffer = ''
 
 export const useSerialConnection = () => {
-  const connect = async () => {
-    console.log('Connect function called')
+  const connect = async (forceNewPort = false) => {
+    console.log('Connect function called, forceNewPort:', forceNewPort)
     try {
       if (!navigator.serial) {
         console.error('Web Serial API not supported')
         throw new Error('Web Serial API not supported in this browser')
       }
 
-      console.log('Requesting port...')
-      port.value = await navigator.serial.requestPort()
-      console.log('Port selected:', port.value)
+      // First, try to get previously authorized ports (auto-detect)
+      const ports = await navigator.serial.getPorts()
+      console.log('Available ports:', ports.length)
 
-      console.log('Opening port...')
-      await port.value.open({ baudRate: 115200 })
+      if (!forceNewPort && ports.length > 0) {
+        // Use the first available port (auto-detect)
+        port.value = ports[0]
+        console.log('Using previously authorized port')
+        addToTerminal('ℹ Using previously authorized port', 'normal')
+      } else {
+        // No previously authorized ports, request user to select one
+        console.log('Requesting port selection...')
+        addToTerminal('ℹ Please select a port from the browser dialog', 'normal')
+        port.value = await navigator.serial.requestPort()
+        console.log('Port selected by user')
+      }
+
+      // Get port info for debugging
+      const portInfo = await port.value.getInfo()
+      console.log('Port info - USB Vendor:', portInfo.usbVendorId, 'Product:', portInfo.usbProductId)
+
+      // Try to close if already open (cleanup from previous session)
+      try {
+        if (port.value.readable || port.value.writable) {
+          console.log('Port appears to be open, attempting cleanup...')
+          await port.value.close()
+          await new Promise(resolve => setTimeout(resolve, 200))
+        }
+      } catch (closeError) {
+        console.warn('Cleanup error (may be normal):', closeError.message)
+      }
+
+      console.log('Opening port with baudRate: 115200...')
+      addToTerminal('ℹ Opening serial port...', 'normal')
+      
+      await port.value.open({ 
+        baudRate: 115200,
+        dataBits: 8,
+        stopBits: 1,
+        parity: 'none',
+        flowControl: 'none'
+      })
+      
       console.log('Port opened successfully')
-
       isConnected.value = true
-      addToTerminal('✓ Connected to serial port', 'success')
+      addToTerminal('✓ Connected to serial port successfully', 'success')
       startReading()
     } catch (error) {
       console.error('Connection error:', error)
+      console.error('Error name:', error.name)
+      console.error('Error message:', error.message)
       isConnected.value = false
-      addToTerminal(`✗ Failed to connect: ${error.message}`, 'error')
+      port.value = null
+      
+      // Provide more helpful error messages
+      let errorMessage = error.message
+      let suggestion = ''
+      
+      if (error.name === 'InvalidStateError') {
+        errorMessage = 'Port is already open or in use'
+        suggestion = 'Try: 1) Disconnect first, 2) Close other apps using the port, 3) Unplug and replug device'
+      } else if (error.name === 'NetworkError') {
+        errorMessage = 'Failed to open port'
+        suggestion = 'Try: 1) Check device is plugged in, 2) Close Arduino IDE/PlatformIO/other serial apps, 3) Try "Select New Port" button'
+      } else if (error.name === 'NotFoundError') {
+        errorMessage = 'No port selected'
+        suggestion = 'Click Connect again and select your device'
+      }
+      
+      addToTerminal(`✗ Failed to connect: ${errorMessage}`, 'error')
+      if (suggestion) {
+        addToTerminal(`  ${suggestion}`, 'error')
+      }
       throw error
+    }
+  }
+  
+  const forgetPort = async () => {
+    try {
+      const ports = await navigator.serial.getPorts()
+      if (ports.length > 0) {
+        await ports[0].forget()
+        addToTerminal('✓ Port forgotten. Click Connect to select a new port.', 'success')
+      }
+    } catch (error) {
+      addToTerminal(`✗ Error forgetting port: ${error.message}`, 'error')
     }
   }
 
@@ -40,15 +110,31 @@ export const useSerialConnection = () => {
     if (port.value) {
       try {
         if (reader.value) {
-          await reader.value.cancel()
+          try {
+            await reader.value.cancel()
+            reader.value.releaseLock()
+          } catch (e) {
+            console.warn('Reader cleanup error:', e)
+          }
         }
-        await port.value.close()
+        
+        // Only close if the port is actually open
+        if (port.value.readable || port.value.writable) {
+          await port.value.close()
+        }
+        
         port.value = null
         reader.value = null
         isConnected.value = false
+        buffer = '' // Clear buffer
         addToTerminal('✗ Disconnected from serial port', 'error')
       } catch (error) {
         console.error('Disconnection error:', error)
+        // Force cleanup even if there's an error
+        port.value = null
+        reader.value = null
+        isConnected.value = false
+        buffer = ''
         addToTerminal(`✗ Error disconnecting: ${error.message}`, 'error')
       }
     }
@@ -171,6 +257,7 @@ export const useSerialConnection = () => {
     terminalOutput,
     connect,
     disconnect,
-    sendCommand
+    sendCommand,
+    forgetPort
   }
 }

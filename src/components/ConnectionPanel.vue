@@ -1,9 +1,20 @@
 <template>
     <div class="bg-green-200 p-6 rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
       <h2 class="text-xl font-bold mb-4">Connection</h2>
-      <div class="flex space-x-4">
+      <div class="mb-3 text-sm">
+        <p class="text-gray-700">
+          <span class="font-semibold">Status:</span> 
+          <span :class="isConnected ? 'text-green-700' : 'text-gray-600'">
+            {{ isConnected ? 'Connected' : 'Disconnected' }}
+          </span>
+        </p>
+        <p class="text-gray-600 text-xs mt-1">
+          {{ isConnected ? 'Device ready' : 'Auto-detects previously authorized ports' }}
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-2">
         <button 
-          @click="connect" 
+          @click="() => connect()" 
           :disabled="isConnected"
           class="command-btn"
           :class="{ 'opacity-50 cursor-not-allowed': isConnected }"
@@ -19,6 +30,24 @@
         >
           Disconnect
         </button>
+        <button 
+          @click="() => connect(true)" 
+          :disabled="isConnected"
+          class="command-btn bg-blue-500 hover:bg-blue-600 text-sm"
+          :class="{ 'opacity-50 cursor-not-allowed': isConnected }"
+          title="Select a different serial port"
+        >
+          Select New Port
+        </button>
+        <button 
+          @click="forgetPort" 
+          :disabled="isConnected"
+          class="command-btn bg-orange-500 hover:bg-orange-600 text-sm"
+          :class="{ 'opacity-50 cursor-not-allowed': isConnected }"
+          title="Forget saved port and start fresh"
+        >
+          Forget Port
+        </button>
       </div>
     </div>
   </template>
@@ -27,5 +56,5 @@
   import { ref } from 'vue'
   import { useSerialConnection } from '../utils/serialConnection'
   
-  const { connect, disconnect, isConnected } = useSerialConnection()
+  const { connect, disconnect, isConnected, forgetPort } = useSerialConnection()
   </script>

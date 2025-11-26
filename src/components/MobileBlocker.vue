@@ -1,17 +1,21 @@
 <template>
-    <div v-if="isMobileDevice"
-        class="fixed inset-0 bg-yellow-50 z-50 flex flex-col items-center justify-center p-6 text-center">
-        <div
-            class="bg-white rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 max-w-md w-full">
-            <div class="text-4xl mb-4">📱❌</div>
-            <h1 class="text-2xl font-bold mb-4">Desktop Only</h1>
-            <p class="text-gray-600 mb-4">
-                This application requires Web Serial API, which is only available on desktop browsers like Chrome or
-                Edge.
-            </p>
-            <div class="text-sm text-gray-500">
-                Please visit this site from a desktop computer to use the WiFi Marauder interface.
+    <!-- Mobile Warning Banner (non-blocking) -->
+    <div v-if="isMobileDevice && !dismissed"
+        class="fixed top-0 left-0 right-0 bg-orange-400 border-b-2 border-black z-40 p-3 text-center">
+        <div class="flex items-center justify-between max-w-4xl mx-auto">
+            <div class="flex-1 text-left">
+                <p class="text-xs sm:text-sm font-bold text-black">
+                    📱 Mobile Mode: Hardware connection not available
+                </p>
+                <p class="text-xs text-gray-800">
+                    Use "Demo" button to explore the interface
+                </p>
             </div>
+            <button 
+                @click="dismissed = true"
+                class="ml-2 px-2 py-1 bg-black text-white text-xs font-bold rounded hover:bg-gray-800">
+                ✕
+            </button>
         </div>
     </div>
 </template>
@@ -20,6 +24,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 
 const isMobileDevice = ref(false)
+const dismissed = ref(false)
 
 onMounted(() => {
     const checkMobile = () => {

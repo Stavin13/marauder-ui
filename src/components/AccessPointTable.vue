@@ -1,53 +1,55 @@
 <template>
   <div class="h-full flex flex-col">
     <!-- Header with filters -->
-    <div class="flex flex-col gap-4 mb-4">
+    <div class="flex flex-col gap-2 sm:gap-4 mb-2 sm:mb-4">
       <!-- Title and actions -->
-      <div class="flex justify-between items-center">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
         <div class="flex items-center space-x-2">
-          <h2 class="text-xl font-bold">Access Points</h2>
-          <span class="text-sm text-gray-600">({{ accessPoints.size }} devices)</span>
+          <h2 class="text-lg sm:text-xl font-bold">Access Points</h2>
+          <span class="text-xs sm:text-sm text-gray-600">({{ accessPoints.size }})</span>
         </div>
         <div class="flex items-center space-x-2">
           <button @click="refreshList"
-            class="px-3 py-1 text-sm font-bold bg-blue-500 text-white rounded border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+            class="px-2 sm:px-3 py-1 text-xs sm:text-sm font-bold bg-blue-500 text-white rounded border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
             :disabled="!isConnected">
             Refresh
           </button>
           <button @click="clearTable"
-            class="px-3 py-1 text-sm font-bold bg-orange-500 text-white rounded border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
+            class="px-2 sm:px-3 py-1 text-xs sm:text-sm font-bold bg-orange-500 text-white rounded border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
             Clear
           </button>
         </div>
       </div>
 
       <!-- Filters -->
-      <div class="flex space-x-4">
+      <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
         <div class="flex-1">
-          <input type="text" v-model="search" placeholder="Search by ESSID, BSSID, or Station..."
-            class="w-full px-3 py-2 text-sm bg-white rounded border-2 border-black focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <input type="text" v-model="search" placeholder="Search..."
+            class="w-full px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm bg-white rounded border-2 border-black focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
-        <div class="flex space-x-2">
-          <button v-for="view in viewOptions" :key="view.id" @click="currentView = view.id"
-            class="px-3 py-2 text-sm font-bold rounded border-2 border-black"
-            :class="currentView === view.id ? 'bg-orange-500 text-white shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]' : 'bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]'">
-            {{ view.label }}
-          </button>
+        <div class="flex gap-2">
+          <div class="flex space-x-1 sm:space-x-2">
+            <button v-for="view in viewOptions" :key="view.id" @click="currentView = view.id"
+              class="px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm font-bold rounded border-2 border-black"
+              :class="currentView === view.id ? 'bg-orange-500 text-white shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]' : 'bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]'">
+              {{ view.label }}
+            </button>
+          </div>
+          <select v-model="sortBy"
+            class="px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm bg-white rounded border-2 border-black focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="rssi">Signal</option>
+            <option value="stations">Stations</option>
+            <option value="essid">Name</option>
+            <option value="channel">Channel</option>
+          </select>
         </div>
-        <select v-model="sortBy"
-          class="px-3 py-2 text-sm bg-white rounded border-2 border-black focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <option value="rssi">Sort by Signal</option>
-          <option value="stations">Sort by Stations</option>
-          <option value="essid">Sort by Name</option>
-          <option value="channel">Sort by Channel</option>
-        </select>
       </div>
     </div>
 
     <!-- Table -->
     <div class="flex-1 min-h-0 overflow-auto border-2 border-black rounded bg-white">
       <!-- Compact View -->
-      <table v-if="currentView === 'compact'" class="w-full text-sm">
+      <table v-if="currentView === 'compact'" class="w-full text-xs sm:text-sm">
         <thead class="bg-orange-300 sticky top-0 z-10">
           <tr>
             <th class="px-2 py-1 text-left border-b-2 border-black font-bold w-12">#</th>
@@ -55,14 +57,14 @@
             <th class="px-2 py-1 text-left border-b-2 border-black w-16 font-bold">CH</th>
             <th class="px-2 py-1 text-left border-b-2 border-black w-16 font-bold">RSSI</th>
             <th class="px-2 py-1 text-left border-b-2 border-black w-16 font-bold">STA</th>
+            <th class="px-2 py-1 text-left border-b-2 border-black w-32 font-bold">Actions</th>
           </tr>
         </thead>
         <tbody>
           <template v-for="ap in sortedAPs" :key="ap.bssid">
-            <tr class="hover:bg-orange-50 border-b border-gray-200 cursor-pointer" :class="getSignalClass(ap.rssi)"
-              @click="ap.showStations = !ap.showStations">
-              <td class="px-2 py-1 font-mono">{{ ap.index }}</td>
-              <td class="px-2 py-1">
+            <tr class="hover:bg-orange-50 border-b border-gray-200" :class="getSignalClass(ap.rssi)">
+              <td class="px-2 py-1 font-mono cursor-pointer" @click="ap.showStations = !ap.showStations">{{ ap.index }}</td>
+              <td class="px-2 py-1 cursor-pointer" @click="ap.showStations = !ap.showStations">
                 <div class="flex items-center">
                   <span class="font-medium">{{ ap.essid }}</span>
                   <span v-if="ap.isSelected" class="ml-1 text-xs bg-green-100 px-1 rounded">
@@ -73,22 +75,40 @@
                   </span>
                 </div>
               </td>
-              <td class="px-2 py-1">{{ ap.channel }}</td>
-              <td class="px-2 py-1">
+              <td class="px-2 py-1 cursor-pointer" @click="ap.showStations = !ap.showStations">{{ ap.channel }}</td>
+              <td class="px-2 py-1 cursor-pointer" @click="ap.showStations = !ap.showStations">
                 <div class="flex items-center">
                   <div class="w-2 h-2 rounded-full mr-1" :class="getSignalDotClass(ap.rssi)"></div>
                   {{ ap.rssi || 'N/A' }}
                 </div>
               </td>
-              <td class="px-2 py-1">
+              <td class="px-2 py-1 cursor-pointer" @click="ap.showStations = !ap.showStations">
                 <span class="text-xs px-1 py-0.5 bg-blue-100 rounded">
                   {{ ap.stations?.length || 0 }}
                 </span>
               </td>
+              <td class="px-1 sm:px-2 py-1">
+                <div class="flex flex-col sm:flex-row gap-1">
+                  <button 
+                    @click.stop="selectAndDeauth(ap)" 
+                    :disabled="!isConnected"
+                    class="px-1 sm:px-2 py-0.5 text-[10px] sm:text-xs font-bold bg-red-500 text-white rounded border border-black hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                    title="Select and Deauth">
+                    Deauth
+                  </button>
+                  <button 
+                    @click.stop="selectAP(ap)" 
+                    :disabled="!isConnected"
+                    class="px-1 sm:px-2 py-0.5 text-[10px] sm:text-xs font-bold bg-blue-500 text-white rounded border border-black hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                    title="Select this AP">
+                    Select
+                  </button>
+                </div>
+              </td>
             </tr>
             <!-- Stations subrow -->
             <tr v-if="ap.showStations && ap.stations?.length" class="bg-gray-50 text-xs border-b border-gray-200">
-              <td colspan="5" class="px-2 py-1">
+              <td colspan="6" class="px-2 py-1">
                 <div class="pl-4 space-y-1">
                   <div v-for="station in ap.stations" :key="station.mac" class="flex items-center space-x-2">
                     <span class="w-8 text-gray-500">#{{ station.id }}</span>
@@ -103,7 +123,7 @@
       </table>
 
       <!-- Detailed View -->
-      <table v-else class="w-full text-sm">
+      <table v-else class="w-full text-xs sm:text-sm">
         <thead class="bg-orange-300 sticky top-0 z-10">
           <tr>
             <th class="px-2 py-1 text-left border-b-2 border-black font-bold w-12">#</th>
@@ -113,14 +133,14 @@
             <th class="px-2 py-1 text-left border-b-2 border-black w-32 font-bold">BSSID</th>
             <th class="px-2 py-1 text-left border-b-2 border-black w-16 font-bold">STA</th>
             <th class="px-2 py-1 text-left border-b-2 border-black w-24 font-bold">Last Seen</th>
+            <th class="px-2 py-1 text-left border-b-2 border-black w-32 font-bold">Actions</th>
           </tr>
         </thead>
         <tbody>
           <template v-for="ap in sortedAPs" :key="ap.bssid">
-            <tr class="hover:bg-orange-50 border-b border-gray-200 cursor-pointer" :class="getSignalClass(ap.rssi)"
-              @click="ap.showStations = !ap.showStations">
-              <td class="px-2 py-1 font-mono">{{ ap.index }}</td>
-              <td class="px-2 py-1">
+            <tr class="hover:bg-orange-50 border-b border-gray-200" :class="getSignalClass(ap.rssi)">
+              <td class="px-2 py-1 font-mono cursor-pointer" @click="ap.showStations = !ap.showStations">{{ ap.index }}</td>
+              <td class="px-2 py-1 cursor-pointer" @click="ap.showStations = !ap.showStations">
                 <div class="flex items-center">
                   <span class="font-medium">{{ ap.essid }}</span>
                   <span v-if="ap.isSelected" class="ml-1 text-xs bg-green-100 px-1 rounded">
@@ -131,24 +151,42 @@
                   </span>
                 </div>
               </td>
-              <td class="px-2 py-1">{{ ap.channel }}</td>
-              <td class="px-2 py-1">
+              <td class="px-2 py-1 cursor-pointer" @click="ap.showStations = !ap.showStations">{{ ap.channel }}</td>
+              <td class="px-2 py-1 cursor-pointer" @click="ap.showStations = !ap.showStations">
                 <div class="flex items-center">
                   <div class="w-2 h-2 rounded-full mr-1" :class="getSignalDotClass(ap.rssi)"></div>
                   {{ ap.rssi || 'N/A' }}
                 </div>
               </td>
-              <td class="px-2 py-1 font-mono">{{ ap.bssid }}</td>
-              <td class="px-2 py-1">
+              <td class="px-2 py-1 font-mono cursor-pointer" @click="ap.showStations = !ap.showStations">{{ ap.bssid }}</td>
+              <td class="px-2 py-1 cursor-pointer" @click="ap.showStations = !ap.showStations">
                 <span class="text-xs px-1 py-0.5 bg-blue-100 rounded">
                   {{ ap.stations?.length || 0 }}
                 </span>
               </td>
-              <td class="px-2 py-1 text-gray-600">{{ formatLastSeen(ap.lastSeen) }}</td>
+              <td class="px-2 py-1 text-gray-600 cursor-pointer" @click="ap.showStations = !ap.showStations">{{ formatLastSeen(ap.lastSeen) }}</td>
+              <td class="px-1 sm:px-2 py-1">
+                <div class="flex flex-col sm:flex-row gap-1">
+                  <button 
+                    @click.stop="selectAndDeauth(ap)" 
+                    :disabled="!isConnected"
+                    class="px-1 sm:px-2 py-0.5 text-[10px] sm:text-xs font-bold bg-red-500 text-white rounded border border-black hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                    title="Select and Deauth">
+                    Deauth
+                  </button>
+                  <button 
+                    @click.stop="selectAP(ap)" 
+                    :disabled="!isConnected"
+                    class="px-1 sm:px-2 py-0.5 text-[10px] sm:text-xs font-bold bg-blue-500 text-white rounded border border-black hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                    title="Select this AP">
+                    Select
+                  </button>
+                </div>
+              </td>
             </tr>
             <!-- Stations subrow -->
             <tr v-if="ap.showStations && ap.stations?.length" class="bg-gray-50 text-xs border-b border-gray-200">
-              <td colspan="7" class="px-2 py-1">
+              <td colspan="8" class="px-2 py-1">
                 <div class="pl-4 space-y-1">
                   <div v-for="station in ap.stations" :key="station.mac" class="flex items-center space-x-2">
                     <span class="w-8 text-gray-500">#{{ station.id }}</span>
@@ -267,6 +305,21 @@ const clearTable = () => {
 const refreshList = async () => {
   if (isConnected.value) {
     await sendCommand('list -a')
+  }
+}
+
+const selectAP = async (ap) => {
+  if (isConnected.value && ap.index !== undefined) {
+    await sendCommand(`select -a ${ap.index}`)
+  }
+}
+
+const selectAndDeauth = async (ap) => {
+  if (isConnected.value && ap.index !== undefined) {
+    await sendCommand(`select -a ${ap.index}`)
+    // Wait a bit for selection to complete
+    await new Promise(resolve => setTimeout(resolve, 300))
+    await sendCommand('attack -t deauth')
   }
 }
 

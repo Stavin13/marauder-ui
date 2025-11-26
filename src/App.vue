@@ -1,67 +1,78 @@
 <template>
-  <div class="h-screen flex flex-col bg-yellow-50 p-4 gap-4">
+  <div class="h-screen flex flex-col bg-yellow-50 p-2 sm:p-4 gap-2 sm:gap-4">
     <MobileBlocker />
 
     <!-- Header -->
     <div
-      class="bg-pink-400 rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-4 flex justify-between items-center">
-      <h1 class="text-3xl font-black">marauder-ui</h1>
-      <div class="flex items-center space-x-4">
+      class="bg-pink-400 rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-2 sm:p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+      <h1 class="text-xl sm:text-3xl font-black">marauder-ui</h1>
+      <div class="flex items-center flex-wrap gap-2">
         <!-- Demo Mode Button -->
         <button v-if="!serialConnection.isConnected.value" @click="toggleDemoMode"
-          class="px-3 py-1 text-sm font-bold rounded border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+          class="px-2 sm:px-3 py-1 text-xs sm:text-sm font-bold rounded border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
           :class="isDemoMode ? 'bg-purple-500 text-white' : 'bg-white'">
-          {{ isDemoMode ? 'Exit Demo' : 'Try Demo' }}
+          {{ isDemoMode ? 'Exit Demo' : 'Demo' }}
         </button>
 
-        <span class="text-sm">Status:</span>
+        <span class="text-xs sm:text-sm hidden sm:inline">Status:</span>
         <button @click="handleConnect" v-if="!serialConnection.isConnected.value"
-          class="px-3 py-1 bg-green-500 text-white text-sm font-bold rounded border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
+          class="px-2 sm:px-3 py-1 bg-green-500 text-white text-xs sm:text-sm font-bold rounded border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
           Connect
         </button>
         <button @click="handleDisconnect" v-if="serialConnection.isConnected.value"
-          class="px-3 py-1 bg-red-500 text-white text-sm font-bold rounded border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
+          class="px-2 sm:px-3 py-1 bg-red-500 text-white text-xs sm:text-sm font-bold rounded border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
           Disconnect
+        </button>
+        <button @click="showMobileMenu = !showMobileMenu" class="sm:hidden px-2 py-1 bg-blue-500 text-white text-xs font-bold rounded border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+          {{ showMobileMenu ? 'Hide' : 'Menu' }}
         </button>
       </div>
     </div>
 
     <!-- Main Content -->
-    <div class="flex-1 flex gap-4 min-h-0">
-      <!-- Left Sidebar -->
-      <div class="w-1/4 flex flex-col gap-4">
+    <div class="flex-1 flex flex-col sm:flex-row gap-2 sm:gap-4 min-h-0 overflow-hidden">
+      <!-- Left Sidebar - Mobile: Collapsible, Desktop: Always visible -->
+      <div v-show="showMobileMenu || !isMobileDevice" 
+           class="w-full sm:w-1/4 flex flex-col gap-2 sm:gap-4 max-h-[40vh] sm:max-h-full">
         <!-- Command Builder -->
-        <div class="bg-white rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-4">
+        <div class="bg-white rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-2 sm:p-4">
           <CommandBuilder />
         </div>
 
         <!-- Workflows -->
         <div
-          class="flex-1 bg-white rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-4 overflow-auto">
-          <h2 class="text-xl font-bold mb-4">Workflows</h2>
-          <div class="space-y-2">
+          class="flex-1 bg-white rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-2 sm:p-4 overflow-auto">
+          <h2 class="text-lg sm:text-xl font-bold mb-2 sm:mb-4">Workflows</h2>
+          <div class="space-y-1 sm:space-y-2">
             <button v-for="workflow in workflows" :key="workflow.id" @click="openWorkflow(workflow)"
-              class="w-full px-3 py-2 text-left text-sm bg-gray-100 hover:bg-gray-200 rounded border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
+              class="w-full px-2 sm:px-3 py-1 sm:py-2 text-left text-xs sm:text-sm bg-gray-100 hover:bg-gray-200 rounded border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
               {{ workflow.name }}
             </button>
           </div>
         </div>
       </div>
 
-
       <!-- Right Content -->
-      <div class="flex-1 flex flex-col gap-4">
+      <div class="flex-1 flex flex-col gap-2 sm:gap-4 min-h-0">
         <!-- APs List -->
         <div
-          class="flex-1 bg-white rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-4 min-h-0">
+          class="flex-1 bg-white rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-2 sm:p-4 min-h-0">
           <AccessPointTable />
         </div>
       </div>
     </div>
 
-    <!-- Terminal Output -->
-    <div class="h-64 bg-white rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-4">
-      <TerminalOutput />
+    <!-- Terminal Output - Collapsible on mobile -->
+    <div class="bg-white rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <button 
+        @click="showTerminal = !showTerminal"
+        class="w-full p-2 sm:hidden flex justify-between items-center font-bold text-sm border-b-2 border-black">
+        <span>Terminal Output</span>
+        <span>{{ showTerminal ? '▼' : '▶' }}</span>
+      </button>
+      <div v-show="showTerminal || !isMobileDevice" class="p-2 sm:p-4 h-32 sm:h-64">
+        <TerminalOutput />
+      </div>
     </div>
   </div>
 
@@ -82,6 +93,8 @@ import { useSerialConnection } from './utils/serialConnection'
 import { generateDemoData, generateDemoTerminalOutput } from './utils/demoData'
 const isDemoMode = ref(false)
 const demoUpdateInterval = ref(null)
+const showMobileMenu = ref(false)
+const showTerminal = ref(true)
 
 // Add mobile detection
 const isMobileDevice = ref(false)
@@ -337,5 +350,25 @@ onUnmounted(() => {
 <style>
 .workflow-dialog {
   z-index: 9999;
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  /* Prevent horizontal scroll */
+  body {
+    overflow-x: hidden;
+  }
+  
+  /* Make tables scrollable horizontally if needed */
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  
+  /* Improve touch targets */
+  button {
+    min-height: 32px;
+  }
 }
 </style>

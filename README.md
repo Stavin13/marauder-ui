@@ -10,13 +10,16 @@ A modern web interface for the [ESP32 Marauder](https://github.com/justcallmekok
 
 ## Features
 
-- 🔌 Serial connection management
+- 🔌 Serial connection management with auto-detection
 - 📡 Real-time AP scanning and monitoring
 - 👥 Station detection and tracking
 - 📊 Dynamic AP and station list with sorting and filtering
 - 🖥️ Interactive terminal output
 - 🎨 Modern neobrutalist design
-- 📱 Responsive layout
+- 📱 **Fully responsive mobile layout**
+- 🎮 Demo mode for testing without hardware
+- ⚡ One-click deauth attacks
+- 🔄 Pre-built attack workflows
 - ⌨️ Command history
 - 🔍 Advanced filtering and sorting options
 
@@ -30,8 +33,14 @@ A modern web interface for the [ESP32 Marauder](https://github.com/justcallmekok
 
 ## Requirements
 
-- A browser supporting the Web Serial API (Chrome, Edge)
+### For Hardware Connection
+- Desktop browser supporting Web Serial API (Chrome 89+, Edge 89+, Opera 75+)
 - An ESP32 device running the [Marauder firmware](https://github.com/justcallmekoko/ESP32Marauder)
+
+### For Demo Mode (No Hardware)
+- Any modern browser (Chrome, Firefox, Safari, Edge)
+- Works on mobile devices (iOS, Android)
+- Perfect for learning and showcasing
 
 ## Development
 
@@ -58,11 +67,25 @@ npm run build
 
 ## Usage
 
+### Desktop (Hardware Connection)
 1. Connect your Marauder device to your computer
-2. Open the web interface
-3. Click "Connect" and select your device from the serial port list
-4. Use the command builder or enter custom commands
+2. Open the web interface in Chrome or Edge
+3. Click "Connect" - device auto-detected or select from list
+4. Use quick action buttons, workflows, or custom commands
 5. Monitor results in the AP list and terminal output
+
+### Mobile (Demo Mode)
+1. Open the web interface on your phone
+2. Dismiss the mobile warning banner
+3. Click "Demo" button to enable demo mode
+4. Explore the full interface with simulated data
+5. Perfect for learning commands and workflows
+
+### Quick Actions
+- **Deauth Button**: One-click deauth attack on any AP
+- **Select Button**: Select AP for workflow execution
+- **Workflows**: Pre-built attack sequences in sidebar
+- **Custom Commands**: Type any Marauder command
 
 ## Commands
 
