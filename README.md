@@ -37,7 +37,7 @@ A modern web interface for the [ESP32 Marauder](https://github.com/justcallmekok
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/marauder-ui.git
+git clone https://github.com/Stavin13/marauder-ui
 cd marauder-ui
 ```
 
