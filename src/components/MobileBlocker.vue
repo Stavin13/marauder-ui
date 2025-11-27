@@ -1,7 +1,7 @@
 <template>
     <!-- Mobile Warning Banner (non-blocking) -->
     <div v-if="isMobileDevice && !dismissed"
-        class="fixed top-0 left-0 right-0 bg-orange-400 border-b-2 border-black z-40 p-3 text-center">
+        class="relative -mx-2 -mt-2 sm:-mx-4 sm:-mt-4 mb-2 sm:mb-4 bg-orange-400 border-b-2 border-black z-40 p-3 text-center">
         <div class="flex items-center justify-between max-w-4xl mx-auto">
             <div class="flex-1 text-left">
                 <p class="text-xs sm:text-sm font-bold text-black">
