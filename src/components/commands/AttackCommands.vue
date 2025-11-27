@@ -1,3 +1,11 @@
+<script setup>
+const emit = defineEmits(['command-built'])
+
+const emitCommand = (command) => {
+  emit('command-built', command)
+}
+</script>
+
 <template>
   <div class="space-y-4">
     <div class="grid grid-cols-2 gap-2">
@@ -22,23 +30,18 @@
       <button @click="emitCommand('evilportal -c start')" class="command-btn bg-orange-500 hover:bg-orange-600 text-white">
         Start Evil Portal
       </button>
+      <button @click="emitCommand('karma -p')" class="command-btn bg-purple-500 hover:bg-purple-600 text-white">
+        Karma Attack
+      </button>
+      <button @click="emitCommand('spoofat -t')" class="command-btn bg-purple-500 hover:bg-purple-600 text-white">
+        Spoof Target
+      </button>
+      <button @click="emitCommand('attack -t badmsg')" class="command-btn bg-red-500 hover:bg-red-600 text-white">
+        Bad Message
+      </button>
       <button @click="emitCommand('stopscan')" class="command-btn bg-gray-500 hover:bg-gray-600 text-white">
         Stop Attack
       </button>
     </div>
   </div>
 </template>
-
-<script setup>
-const emit = defineEmits(['command-built'])
-
-const emitCommand = (command) => {
-  emit('command-built', command)
-}
-</script>
-
-<style scoped>
-.command-btn {
-  @apply px-2 py-2 text-xs font-bold rounded border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all;
-}
-</style>

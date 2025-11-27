@@ -18,6 +18,7 @@
       <ScanCommands v-if="currentTab === 'scan'" @command-built="sendCommand" />
       <AttackCommands v-if="currentTab === 'attack'" @command-built="sendCommand" />
       <SniffCommands v-if="currentTab === 'sniff'" @command-built="sendCommand" />
+      <GPSCommands v-if="currentTab === 'gps'" @command-built="sendCommand" />
       <GeneralCommands v-if="currentTab === 'general'" @command-built="sendCommand" />
     </div>
 
@@ -47,6 +48,7 @@ import ScanCommands from './commands/ScanCommands.vue'
 import AttackCommands from './commands/AttackCommands.vue'
 import SniffCommands from './commands/SniffCommands.vue'
 import GeneralCommands from './commands/GeneralCommands.vue'
+import GPSCommands from './commands/GPSCommands.vue'
 
 const { sendCommand: serialSendCommand } = useSerialConnection()
 const customCommand = ref('')
@@ -56,6 +58,7 @@ const tabs = [
   { id: 'scan', label: 'Scan' },
   { id: 'attack', label: 'Attack' },
   { id: 'sniff', label: 'Sniff' },
+  { id: 'gps', label: 'GPS' },
   { id: 'general', label: 'General' }
 ]
 

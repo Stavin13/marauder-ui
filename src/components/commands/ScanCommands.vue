@@ -22,6 +22,9 @@
         <button @click="emitCommand('wardrive -s')" class="command-btn">
           Wardrive
         </button>
+        <button @click="emitCommand('sigmon')" class="command-btn">
+          Signal Monitor
+        </button>
         <button @click="emitCommand('stopscan')" class="command-btn bg-red-500 hover:bg-red-600 text-white">
           Stop Scan
         </button>
