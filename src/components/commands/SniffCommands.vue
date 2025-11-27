@@ -1,70 +1,44 @@
 <template>
-    <div class="command-group">
-      <div class="grid gap-3">
-        <div class="grid grid-cols-2 gap-3">
-          <button @click="emitCommand('sniffraw')" class="command-btn">
-            Raw Sniff
-          </button>
-          <button @click="emitCommand('sniffbeacon')" class="command-btn">
-            Beacon Sniff
-          </button>
-          <button @click="emitCommand('sniffprobe')" class="command-btn">
-            Probe Sniff
-          </button>
-          <button @click="emitCommand('sniffpwn')" class="command-btn">
-            PWN Sniff
-          </button>
-          <button @click="emitCommand('sniffesp')" class="command-btn">
-            ESP Sniff
-          </button>
-          <button @click="emitCommand('sniffdeauth')" class="command-btn">
-            Deauth Sniff
-          </button>
-        </div>
-  
-        <div class="bg-white p-4 rounded-lg border-2 border-black mt-3">
-          <h3 class="font-bold mb-2">PMKID Sniff Options</h3>
-          <div class="space-y-3">
-            <div>
-              <label class="block text-sm mb-1">Channel:</label>
-              <input v-model="channel" type="number" class="input-field" placeholder="Channel number">
-            </div>
-            <div class="flex space-x-4">
-              <label class="flex items-center">
-                <input v-model="deauth" type="checkbox" class="mr-2">
-                Deauth
-              </label>
-              <label class="flex items-center">
-                <input v-model="loop" type="checkbox" class="mr-2">
-                Loop
-              </label>
-            </div>
-            <button @click="buildPmkidCommand" class="command-btn w-full">
-              Start PMKID Sniff
-            </button>
-          </div>
-        </div>
-      </div>
+  <div class="space-y-4">
+    <div class="grid grid-cols-2 gap-2">
+      <button @click="emitCommand('sniffbeacon')" class="command-btn bg-blue-500 hover:bg-blue-600 text-white">
+        Sniff Beacon
+      </button>
+      <button @click="emitCommand('sniffdeauth')" class="command-btn bg-blue-500 hover:bg-blue-600 text-white">
+        Sniff Deauth
+      </button>
+      <button @click="emitCommand('sniffpmkid')" class="command-btn bg-blue-500 hover:bg-blue-600 text-white">
+        Sniff PMKID
+      </button>
+      <button @click="emitCommand('sniffesp')" class="command-btn bg-blue-500 hover:bg-blue-600 text-white">
+        Sniff ESP
+      </button>
+      <button @click="emitCommand('sniffmultissid')" class="command-btn bg-blue-500 hover:bg-blue-600 text-white">
+        Sniff Multi-SSID
+      </button>
+      <button @click="emitCommand('sniffbt')" class="command-btn bg-indigo-500 hover:bg-indigo-600 text-white">
+        Sniff Bluetooth
+      </button>
+      <button @click="emitCommand('sniffskim')" class="command-btn bg-indigo-500 hover:bg-indigo-600 text-white">
+        Sniff Skimmers
+      </button>
+      <button @click="emitCommand('stopscan')" class="command-btn bg-gray-500 hover:bg-gray-600 text-white">
+        Stop Sniff
+      </button>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref } from 'vue'
-  
-  const emit = defineEmits(['command-built'])
-  const channel = ref('')
-  const deauth = ref(false)
-  const loop = ref(false)
-  
-  const emitCommand = (command) => {
-    emit('command-built', command)
-  }
-  
-  const buildPmkidCommand = () => {
-    let cmd = 'sniffpmkid'
-    if (channel.value) cmd += ` -c ${channel.value}`
-    if (deauth.value) cmd += ' -d'
-    if (loop.value) cmd += ' -l'
-    emit('command-built', cmd)
-  }
-  </script>
+  </div>
+</template>
+
+<script setup>
+const emit = defineEmits(['command-built'])
+
+const emitCommand = (command) => {
+  emit('command-built', command)
+}
+</script>
+
+<style scoped>
+.command-btn {
+  @apply px-2 py-2 text-xs font-bold rounded border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all;
+}
+</style>
